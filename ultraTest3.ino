@@ -40,8 +40,8 @@ ground through it and continue to draw power. ***
 Timer T;  // software timer
 long baud_rate = 115200L;
 // Wi-Fi
-const char* ssid1 = "RajaCell";
-const char* password1 = "raja1234";
+const char* ssid1 = "Raja";
+const char* password1 = "raja";
 
 // for 8266
 const int trigger = 5; // D1
