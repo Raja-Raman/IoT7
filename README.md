@@ -1,2 +1,2 @@
 # IoT7
-IoT, serial, aws, 
+IoT, serial, aws, thermal camera
