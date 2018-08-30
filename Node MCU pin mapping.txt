@@ -1,0 +1,92 @@
+Node MCU GPIO to Dx mapping:
+
+GPIO 0  - D 3  
+GPIO 1  - D 10  - TX 
+GPIO 2  - D 4   - LED on ESP-12E  
+GPIO 3  - D 9   - RX  
+GPIO 4  - D 2  
+GPIO 5  - D 1  
+
+GPIO 6  -       - flash chip SPI  
+GPIO 7  -       - flash chip SPI  
+GPIO 8  -       - flash chip SPI 
+GPIO 9  - D 11  - SD2 (flash chip if QIO) - leave this alone !
+GPIO 10 - D 12  - SD3 (flash chip if QIO) - leave this alone !  
+GPIO 11 -       - flash chip SPI  
+
+GPIO 12 - D 6   
+GPIO 13 - D 7  
+GPIO 14 - D 5  
+GPIO 15 - D 8  
+GPIO 16 - D 0   - LED on NodeMCU dev board  
+
+------------------------------------------------------------------------------
+Dx to GPIO mapping:
+
+D 0   - GPIO 16   - LED_BUILTIN
+D 1   - GPIO 5 
+D 2   - GPIO 4 
+D 3   - GPIO 0 
+D 4   - GPIO 2    - LED on ESP12E
+D 5   - GPIO 14 
+D 6   - GPIO 12 
+D 7   - GPIO 13 
+D 8   - GPIO 15 
+D 9   - GPIO 3   - RX
+D 10  - GPIO 1   - TX
+D 11  - GPIO 9   - flash/ SD2
+D 12  - GPIO 10  - flash/ SD3
+---------------------------------------------------------------------------------
+Reference:
+https://zoetrope.io/tech-blog/esp8266-bootloader-modes-and-gpio-state-startup/
+
+NOTEs: 
+
+You have 9 Usable OUTPUT pins: GPIO  0,2,4,5, 12,13,14, 15,16.
+These are the D0,D1,D2...D8 pins.
+
+You have 7 Usable INPUT pins : GPIO  0,2,4,5, 12,13,14.
+NOTE: D0 (GPIO 16) cannot be used for input on Node MCU.
+When using GPIO 15 for input, remember it has a built-in pull down. So internal 
+pull up is not there.
+
+In addition, GPIO 3 (Rx) can be used as input/output if serial port is not used.
+NOTE: Rx takes 6.5 mA when low. This is higher then the other input pins.
+GPIO 1 (Tx) cannot be used for I/O as there are default messages flowing out.
+
+Special notes on GPIO 0, 2 and 15:
+
+GPIO 0,2 and 15 decide the startup mode. It is best to avoid them for
+any I/O. If unavoidable, use appropriate pull up/ pull down resistors.
+
+GPIO 0 is pulled high during normal operation, so you can’t use it as a Hi-Z input.
+GPIO 2 can’t be low at boot, so you can’t connect a switch to it.
+
+GPIO 0 is driven with some signal at startup. It stablilizes after 100 mSec.
+
+When you take GPIO 2 LOW, its LED glows; the low input is also taken correctly. In 
+this condition the current is 1.2 mA.
+You don’t have to add an external pull-up resistor to GPIO2, the internal one is 
+enabled at boot.
+
+You cannot use GPIO 15 for input without external pullup; it is always LOW due to its
+pull down resistor.
+
+GPIO15 is always pulled low, so you can’t use the internal pull-up resistor. 
+When using GPIO15 as an input to read a switch or connect it to a device with an 
+open-collector output, like I2C.
+
+GPIO 16 :
+
+GPIO 16 is to be connected to RESET pin to come out of periodic sleep mode.
+Do NOT use GPIO 16 for input; it takes 45 mA ! (due to the LED ?). The Pin is
+rated only for 12 mA.
+
+Never use GPIO 9 and 10 (SD3/ SD2), even though they are given Dx names. If you output
+to them, the system crashes !
+
+
+
+
+
+
