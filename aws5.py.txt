@@ -1,0 +1,134 @@
+'''
+Sends MQTT messages to AWS IoT through Python SDK
+This code is adapted from
+#  https://github.com/aws/aws-iot-device-sdk-python/blob/master/samples/basicPubSub/basicPubSub.py
+The SDK and samples are at
+https://github.com/aws/aws-iot-device-sdk-python
+
+'''
+# pip install AWSIoTPythonSDK 
+
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+import logging
+import time
+import argparse
+import json
+
+
+# Custom MQTT message callback
+def myCallback(client, userdata, message):
+    print("-------------------------")
+    print("Received a new message: ")
+    print(message.payload)
+    print("from topic: ",end='')
+    print(message.topic)
+    print("-------------------------\n\n")
+
+
+host = 'xxxi7neuuu91.iot.us-west-2.amazonaws.com'
+rootCAPath = '../certificates/root_CA.pem'
+certificatePath = '../certificates/8888ecba0d4sf-certificate.pem.crt'
+privateKeyPath = '../certificates/ecb8sdf7777-private.pem.key'
+useWebsocket = False
+'''
+certificatePath = None
+privateKeyPath = None
+useWebsocket = True
+'''
+mode = 'both'
+port = 443
+clientId = "my_own_client_1963"
+topic = "$aws/things/my_first_thing/shadow/update"
+msg = 'hello python AWS...'
+
+
+AllowedActions = ['publish', 'subscribe', 'both']
+
+if mode not in AllowedActions:
+    print("Unknown --mode option %s. Must be one of %s" % (mode, str(AllowedActions)))
+    exit(2)
+
+if useWebsocket and certificatePath and privateKeyPath:
+    print("X.509 cert authentication and WebSocket are mutual exclusive. Please pick one.")
+    exit(2)
+
+if not useWebsocket and (not certificatePath or not privateKeyPath):
+    print("Missing credentials for authentication.")
+    exit(2)
+
+# Port defaults
+if useWebsocket and not port:  # When no port override for WebSocket, default to 443
+    port = 443
+if not useWebsocket and not port:  # When no port override for non-WebSocket, default to 8883
+    port = 8883
+
+# optional - disable this in prod
+# Configure logging
+logger = logging.getLogger("AWSIoTPythonSDK.core")
+logger.setLevel(logging.DEBUG)
+streamHandler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+streamHandler.setFormatter(formatter)
+logger.addHandler(streamHandler)
+
+# Init AWSIoTMQTTClient
+myAWSIoTMQTTClient = None
+if useWebsocket:
+    myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId, useWebsocket=True)
+    myAWSIoTMQTTClient.configureEndpoint(host, port)
+    myAWSIoTMQTTClient.configureCredentials(rootCAPath)
+else:
+    myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
+    myAWSIoTMQTTClient.configureEndpoint(host, port)
+    myAWSIoTMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
+
+# AWSIoTMQTTClient connection configuration
+myAWSIoTMQTTClient.configureAutoReconnectBackoffTime(1, 32, 20)
+myAWSIoTMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
+myAWSIoTMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
+myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
+myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
+
+# Connect and subscribe to AWS IoT
+myAWSIoTMQTTClient.connect()
+if mode == 'both' or mode == 'subscribe':
+    myAWSIoTMQTTClient.subscribe(topic, 1, myCallback)
+time.sleep(2)
+
+# Publish to the same topic in a loop forever
+#loopCount = 0
+stat = 5
+temps = 0
+humid = 0
+lite = 0
+cmd = 0
+while True:
+    if mode == 'both' or mode == 'publish':
+        message = {}
+        #message['sequence'] = loopCount
+        message['ID'] = 1234
+        message['G'] = 1        
+        message['S'] = stat 
+        message['T'] = temps
+        message['H'] = humid 
+        message['L'] = lite
+        message['C'] = cmd
+        subroot = {}
+        subroot['reported'] = message
+        root = {}
+        root['state'] = subroot
+        jmessage = json.dumps(root)
+        print ("Message length: ",end='')
+        print(len(jmessage))
+        myAWSIoTMQTTClient.publish(topic, jmessage, 1)
+        if mode == 'publish':
+            print('Published topic %s: %s\n' % (topic, jmessage))
+        #loopCount += 1
+        stat =(stat+1)%5
+        temps = (temps+2)%50 + 10
+        humid = (humid +7)%100
+        lite = (lite+50)%1000
+    time.sleep(10)
+    
+print ("Bye !")    
+    
