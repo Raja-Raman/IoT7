@@ -7,11 +7,12 @@ The next 512 bytes (128 chunks, 64   to 127) are available to users.
 The memory survives a chip reset, but NOT a power outage.
 ***/
 
-ADC_MODE(ADC_VCC);
 #include <Timer.h>  // https://github.com/JChristensen/Timer
 extern "C" {
 #include "user_interface.h" // needed for the RTC memory read/write functions
 }
+// ADC_MODE can only be set at compile time; and you can't call it from within a function
+ADC_MODE(ADC_VCC);
 
 //chunks 0-63 are for system
 #define RTC_MEMORY_BASE     64
