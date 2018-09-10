@@ -35,7 +35,7 @@ def on_publish(client, userdata, mid):
 
 #---------------------------- main -----------------------------------
      
-client = mqtt.Client("raman_rajas_client_1963_TX", clean_session=False)
+client = mqtt.Client("raman_rajas_client_19_TX", clean_session=False)
 # client.username_pw_set("User", "password")     
 # client = mqtt.Client(userdata = 'Raja\'s callback events-> data')
 client.on_connect = on_connect
