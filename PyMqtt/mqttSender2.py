@@ -19,8 +19,8 @@ server = 'broker.mqttdashboard.com'     # see it at http://www.hivemq.com/demos/
 # port = 8000
 port = 1883
 client = None
-topic1 = 'ind/che/vel/maa/407/par/1'
-#topic2 = "ind/che/vel/maa/407/com/1"
+topic1 = 'ind/che/vel/maa/400/par/1'
+#topic2 = "ind/che/vel/maa/400/com/1"
 terminate = False
 
 #------------------------------ callbacks ---------------------------- 
