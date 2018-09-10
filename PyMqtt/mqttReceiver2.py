@@ -35,7 +35,7 @@ def on_message(client, userdata, msg):
     
 #---------------------------- main -----------------------------------
      
-client = mqtt.Client("raman_rajas_client_1963_RX", clean_session=False)
+client = mqtt.Client("raman_rajas_client_19_RX", clean_session=False)
 # client.username_pw_set("User", "password")     
 
 client.on_connect = on_connect
