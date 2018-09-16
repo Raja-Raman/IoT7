@@ -1,0 +1,21 @@
+// device.h
+
+#ifndef DEVICE_H
+#define DEVICE_H
+
+long DEVICE_ID = 2;  // you MUST increment the device id for every device
+
+long GROUP_ID  = 1;  // the group id is commonly shared by many devices in the same location
+
+// Enable any ONE of the below URLS, and comment out all others !
+// Note: URL must be <= 95 bytes
+
+// AWS server
+//const char *FIRMWARE_SERVER_URL = "http://192.168.0.100:8000/ota/parking/parking.bin";      // parking
+//const char *FIRMWARE_SERVER_URL = "http://192.168.0.100:8000/ota/occupancy/occupancy.bin";  // occupancy  
+
+// Local host
+const char *FIRMWARE_SERVER_URL = "http://52.40.0.7:5050/parking/firmware/download";      // parking
+//const char *FIRMWARE_SERVER_URL   = "http://22.44.239.77:5050/firmware/download";          // occupancy
+
+#endif
